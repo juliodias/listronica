@@ -1,7 +1,19 @@
 (ns listronica.core
-  (:gen-class))
+  (:require [compojure.route :as route]
+            [compojure.core :refer :all]
+            [ring.adapter.jetty :as jetty]
+            [ring.middleware.reload :refer [wrap-reload]]))
+
+(defn home
+  []
+  {:status 200
+   :body "Hello, World!"
+   :headers {}})
+(defroutes app
+           (GET "/" [] (home))
+           (route/not-found "Page not found!"))
 
 (defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  (println "Hello, World!"))
+  [port]
+  (jetty/run-jetty (wrap-reload #'app)
+                   {:port (read-string port)}))
