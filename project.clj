@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [ring "1.9.6"]
                  [compojure "1.7.0"]
-                 [postgresql "9.3-1102.jdbc41"]
+                 [org.postgresql/postgresql "42.6.0"]
                  [org.clojure/java.jdbc "0.7.12"]]
   :main ^:skip-aot listronica.core
   :target-path "target/%s"
