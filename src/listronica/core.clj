@@ -1,9 +1,12 @@
 (ns listronica.core
-  (:require [compojure.route :as route]
-            [compojure.core :refer :all]
-            [listronica.model :as items]
+  (:require [listronica.model :as items]
             [ring.adapter.jetty :as jetty]
-            [ring.middleware.reload :refer [wrap-reload]]))
+            [listronica.handler :refer [handle-index-items]]
+            [compojure.core :refer [defroutes GET]]
+            [compojure.route :refer [not-found]]
+            [ring.handler.dump :refer [handle-dump]]
+            [ring.middleware.reload :refer [wrap-reload]]
+            [ring.middleware.params :refer [wrap-params]]))
 
 (def db "jdbc:postgresql://localhost/listronica?user=johndoe&password=doe")
 
@@ -13,9 +16,25 @@
    :body "Hello, World!"
    :headers {}})
 
-(defroutes app
+(defn wrap-database
+  [handler]
+  (fn [request]
+    (handler (assoc request :database db))))
+
+(defn wrap-server
+  [handler]
+  (fn [request]
+    (assoc-in (handler request) [:headers "Server"] "Listronica 8000")))
+(defroutes routes
            (GET "/" [] (home))
-           (route/not-found "Page not found!"))
+           (GET "/items" [] handle-index-items)
+           (GET "/request" [] handle-dump)
+           (not-found "Page not found!"))
+
+(def app
+  (wrap-server
+    (wrap-database
+      (wrap-params routes))))
 
 (defn -main
   [port]
