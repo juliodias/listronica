@@ -2,21 +2,16 @@
   (:require [listronica.model :refer [create-item
                                       read-items
                                       update-item
-                                      delete-item]]))
+                                      delete-item]]
+            [listronica.view :refer [items-page]]))
 
 (defn handle-index-items
   [request]
   (let [database  (:database request)
         items     (read-items database)]
-    {:status 200
+    {:status  200
      :headers {}
-     :body (str "<html><head></head><body><div>"
-                (mapv :name items)
-                "</div><form method=\"POST\" action=\"request\">"
-                "<input type=\"text\" name=\"name\" placeholder=\"name\">"
-                "<input type=\"text\" name=\"description\" placeholder=\"description\">"
-                "<input type=\"submit\">"
-                "</body></html>")}))
+     :body    (items-page items)}))
 
 (defn handle-create-item
   [request]
